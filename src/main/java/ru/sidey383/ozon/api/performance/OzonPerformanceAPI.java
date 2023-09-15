@@ -1,7 +1,6 @@
 package ru.sidey383.ozon.api.performance;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -20,9 +19,9 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 
-public class PerformanceAPI {
+public class OzonPerformanceAPI {
 
-    private final Logger logger = LoggerFactory.getLogger(PerformanceAPI.class);
+    private final Logger logger = LoggerFactory.getLogger(OzonPerformanceAPI.class);
 
     public static final String API_URL = "https://performance.ozon.ru";
 
@@ -34,7 +33,7 @@ public class PerformanceAPI {
 
     private final String clientSecret;
 
-    public PerformanceAPI(String clientId, String clientSecret) {
+    public OzonPerformanceAPI(String clientId, String clientSecret) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         mapper = new ObjectMapper();

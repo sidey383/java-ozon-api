@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.sidey383.ozon.api.AnswerList;
-import ru.sidey383.ozon.api.performance.PerformanceAPI;
+import ru.sidey383.ozon.api.performance.OzonPerformanceAPI;
 import ru.sidey383.ozon.api.performance.objects.answer.campaning.CampaningAnswer;
 
 import java.io.IOException;
@@ -24,22 +24,22 @@ public class PerformanceBaseTest {
 
     private static List<TestMarket> marketList;
 
-    private static List<PerformanceAPI> performanceAPI;
+    private static List<OzonPerformanceAPI> ozonPerformanceAPI;
 
     @BeforeAll
     public static void loadMarkets() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         marketList = mapper.readValue(PerformanceBaseTest.class.getResource("/markets.json"), new TypeReference<>() {
         });
-        performanceAPI = new ArrayList<>();
+        ozonPerformanceAPI = new ArrayList<>();
         for (var m : marketList) {
-            performanceAPI.add(new PerformanceAPI(m.clientID(), m.clientSecret()));
+            ozonPerformanceAPI.add(new OzonPerformanceAPI(m.clientID(), m.clientSecret()));
         }
     }
 
     @Test
     public void authTest() {
-        for (PerformanceAPI api : performanceAPI) {
+        for (OzonPerformanceAPI api : ozonPerformanceAPI) {
             assertDoesNotThrow(api::updateToken);
             assertFalse(api::isTokenExpire);
             logger.info("Token : "  + api.getToken());
@@ -48,11 +48,11 @@ public class PerformanceBaseTest {
 
     @Test
     public void clientCampaningsTest() {
-        for (PerformanceAPI api : performanceAPI) {
+        for (OzonPerformanceAPI api : ozonPerformanceAPI) {
             assertDoesNotThrow(() -> {
                 AnswerList<CampaningAnswer> answerList = api.getClientCampanings(null, null, null);
                 logger.info("Answer :");
-                for (var a : answerList.list()) {
+                for (var a : answerList.getList()) {
                     logger.info(a.toString());
                 }
             });
