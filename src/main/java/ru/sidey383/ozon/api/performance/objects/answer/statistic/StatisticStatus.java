@@ -1,10 +1,12 @@
 package ru.sidey383.ozon.api.performance.objects.answer.statistic;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import ru.sidey383.ozon.api.performance.objects.request.StatisticRequest;
 
 import java.time.Instant;
 import java.util.UUID;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record StatisticStatus (
         UUID uuid,
         StatisticsRequestState state,
@@ -16,13 +18,6 @@ public record StatisticStatus (
         Kind kind
 
 ) {
-
-    public enum StatisticsRequestState {
-        NOT_STARTED,
-        IN_PROGRESS,
-        ERROR,
-        OK
-    }
 
     public enum Kind {
         STATS,

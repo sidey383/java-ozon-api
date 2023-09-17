@@ -1,8 +1,11 @@
 package ru.sidey383.ozon.api.performance.objects.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.time.Instant;
 import java.time.LocalDate;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record StatisticRequest(
         String[] campaigns,
         Instant from,

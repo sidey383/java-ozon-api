@@ -9,10 +9,6 @@ import java.util.List;
  * **/
 public record ProductInfoPricesItems(List<ProductInfoPrices> items, String last_id, int total) {
 
-    public boolean hasNextItems() {
-        return !(last_id == null || last_id.isEmpty());
-    }
-
     public ProductInfoPricesRequest getNext(ProductInfoPricesRequest old) {
         return new ProductInfoPricesRequest(old.filter(), last_id, old.limit());
     }
