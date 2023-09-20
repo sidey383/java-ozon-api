@@ -1,7 +1,6 @@
 package ru.sidey383.ozon.api.performance.objects.answer.campaning;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -21,7 +20,8 @@ public record CampaningAnswer(
         String productAutopilotStrategy,
         CampaignAutopilotProperties autopilot,
         Instant createdAt,
-        Instant updatedAt
+        Instant updatedAt,
+        String productCampaignMode
 
 ) {
 
@@ -41,6 +41,7 @@ public record CampaningAnswer(
                 ", autopilot=" + autopilot +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", productCampaignMode='" + productCampaignMode + '\'' +
                 '}';
     }
 }
