@@ -6,6 +6,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.sidey383.ozon.api.exception.OzonExceptionFactory;
+import ru.sidey383.ozon.api.exception.OzonRequestLimitException;
 import ru.sidey383.ozon.api.exception.OzonWrongCodeException;
 import ru.sidey383.ozon.api.seller.objects.answer.analystics.data.AnalyticsDataResult;
 import ru.sidey383.ozon.api.seller.objects.answer.analystics.data.AnalyticsDataRow;
@@ -72,18 +74,18 @@ public class OzonSellerAPI {
                         )).build();
         try (Response response = client.newCall(apiRequest).execute()) {
             if (!response.isSuccessful()) {
-                return switch (response.code()) {
-                    case 429 -> {
-                        logger.info("Request limit for {} response: {}", method, response);
-                        try {
-                            Thread.sleep(20000);
-                            yield  getRequest(method, request, result);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
+                OzonWrongCodeException e = OzonExceptionFactory.onWrongCode(response);
+                if (e instanceof OzonRequestLimitException) {
+                    logger.info("Request limit for {} response: {}", method, response);
+                    try {
+                        Thread.sleep(20000);
+                        return getRequest(method, request, result);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
                     }
-                    default -> throw new OzonWrongCodeException(response);
-                };
+                } else {
+                    throw e;
+                }
             }
             assert response.body() != null;
             return mapper.readValue(response.body().string(), result);

@@ -11,12 +11,14 @@ import org.slf4j.LoggerFactory;
 import ru.sidey383.ozon.api.AnswerList;
 import ru.sidey383.ozon.api.ItemList;
 import ru.sidey383.ozon.api.exception.OzonApiException;
+import ru.sidey383.ozon.api.exception.OzonExceptionFactory;
+import ru.sidey383.ozon.api.exception.OzonUnauthorizedException;
 import ru.sidey383.ozon.api.exception.OzonWrongCodeException;
 import ru.sidey383.ozon.api.performance.exception.OzonAPINoBodyException;
 import ru.sidey383.ozon.api.performance.objects.answer.StatisticAnswer;
 import ru.sidey383.ozon.api.performance.objects.answer.TokenAnswer;
-import ru.sidey383.ozon.api.performance.objects.answer.campaning.CampaningAnswer;
-import ru.sidey383.ozon.api.performance.objects.answer.campaning.CampaningState;
+import ru.sidey383.ozon.api.performance.objects.answer.campaning.CampaignAnswer;
+import ru.sidey383.ozon.api.performance.objects.answer.campaning.CampaignState;
 import ru.sidey383.ozon.api.performance.objects.answer.statistic.ReportInfo;
 import ru.sidey383.ozon.api.performance.objects.answer.statistic.StatisticStatus;
 import ru.sidey383.ozon.api.performance.objects.request.StatisticRequest;
@@ -33,7 +35,9 @@ public class OzonPerformanceAPI {
 
     private final Logger logger = LoggerFactory.getLogger(OzonPerformanceAPI.class);
 
-    private static final int STATUS_UPDATE_TIME = 1000;
+    private static final int STATUS_UPDATE_TIME = 2500;
+
+    private static final int MAX_WAIT_TIME = 1000 * 60 * 15;
 
     public static final String API_URL = "https://performance.ozon.ru";
 
@@ -72,9 +76,11 @@ public class OzonPerformanceAPI {
         while(!Thread.currentThread().isInterrupted()) {
             try {
                 StatisticRequestFuture request = statisticQueue.take();
+                logger.debug("Start statistic request fot " + clientId + ": " + request);
                 StatisticAnswer answer;
                 try {
                     answer = getClientStatistics(request.request());
+                    logger.debug("Create statistic request fot " + clientId + ": " + answer);
                 } catch (OzonApiException | IOException e) {
                     request.future().complete(new StatisticResponse(e, null, null));
                     continue;
@@ -83,6 +89,7 @@ public class OzonPerformanceAPI {
                 do {
                     try {
                         status = getClientStatisticStatus(answer.uuid());
+                        logger.debug("Receive statistic request status fot " + clientId + ": " + status);
                         if (!status.state().isTerminate()) {
                             Thread.sleep(STATUS_UPDATE_TIME);
                         }
@@ -142,7 +149,7 @@ public class OzonPerformanceAPI {
         final TokenAnswer answer;
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new OzonWrongCodeException(response);
+                throw  OzonExceptionFactory.onWrongCode(response);
             }
             assert response.body() != null;
             answer = mapper.readValue(response.body().string(), TokenAnswer.class);
@@ -159,7 +166,7 @@ public class OzonPerformanceAPI {
     /**
      * <a href="https://performance.ozon.ru:443/api/client/campaign">/api/client/campaign</a>
      */
-    public AnswerList<CampaningAnswer> getClientCampanings(@Nullable String[] campaignId, @Nullable String type, @Nullable CampaningState state) throws OzonApiException, IOException {
+    public AnswerList<CampaignAnswer> getClientCampaigns(@Nullable String[] campaignId, @Nullable String type, @Nullable CampaignState state) throws OzonApiException, IOException {
         HttpUrl httpUtl = HttpUrl.parse(API_URL + "/api/client/campaign");
         if (httpUtl == null)
             throw new IllegalStateException("Can't parse http url " + API_URL + "/api/client/campaign");
@@ -260,7 +267,13 @@ public class OzonPerformanceAPI {
                 .build();
         Response response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            throw new OzonWrongCodeException(response);
+            OzonWrongCodeException exception = OzonExceptionFactory.onWrongCode(response);
+            if (exception instanceof OzonUnauthorizedException) {
+                updateToken();
+                return getClientStatisticsReport(status);
+            } else {
+                throw exception;
+            }
         }
         if (response.body() == null)
             throw new OzonAPINoBodyException(request.url().toString(), response.code());
@@ -270,11 +283,17 @@ public class OzonPerformanceAPI {
     private <T> T getResponse(Request.Builder requestBuilder, Class<T> type) throws OzonApiException, IOException {
         if (isTokenExpire())
             updateToken();
-        requestBuilder.addHeader(token.getParamName(), token.getParamContent());
+        requestBuilder.header(token.getParamName(), token.getParamContent());
         Request request = requestBuilder.build();
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new OzonWrongCodeException(response);
+                OzonWrongCodeException exception = OzonExceptionFactory.onWrongCode(response);
+                if (exception instanceof OzonUnauthorizedException) {
+                    updateToken();
+                    return getResponse(requestBuilder, type);
+                } else {
+                    throw exception;
+                }
             }
             if (response.body() == null)
                 throw new OzonAPINoBodyException(request.url().url().toString(), response.code());
@@ -289,13 +308,17 @@ public class OzonPerformanceAPI {
         Request request = requestBuilder.build();
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new OzonWrongCodeException(response);
+                OzonWrongCodeException exception = OzonExceptionFactory.onWrongCode(response);
+                if (exception instanceof OzonUnauthorizedException) {
+                    updateToken();
+                    return getResponse(requestBuilder, type);
+                } else {
+                    throw exception;
+                }
             }
             if (response.body() == null)
                 throw new OzonAPINoBodyException(request.url().toString(), response.code());
-            String str = response.body().string();
-            logger.info(str);
-            return mapper.readValue(str, type);
+            return mapper.readValue(response.body().string(), type);
         }
     }
 

@@ -7,23 +7,30 @@ import java.time.LocalDate;
 import java.util.Arrays;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record CampaningAnswer(
-        String id,
-        String title,
-        CampaningState state,
-        String advObjectType,
-        LocalDate fromDate,
-        LocalDate toDate,
+public record CampaignAnswer(
+        long id, //
+        String title, //
+        CampaignState state, //
+        String advObjectType, //
+        LocalDate fromDate, //
+        LocalDate toDate, //
         long budget, // (RUB / 1.000.000)
         long dailyBudget,  // (RUB / 1.000.000)
-        ProductCampaignPlacement[] placement,
-        String productAutopilotStrategy,
-        CampaignAutopilotProperties autopilot,
-        Instant createdAt,
-        Instant updatedAt,
-        String productCampaignMode
+        ProductCampaignPlacement[] placement, //
+        String productAutopilotStrategy, //
+        CampaignAutopilotProperties autopilot, //
+        Instant createdAt, //
+        Instant updatedAt, //
+        CampaignMode productCampaignMode,  //
+        String PaymentType
 
 ) {
+
+    public static final String ADV_OBJECT_TYPE_SKU = "SKU";
+    public static final String ADV_OBJECT_TYPE_BANNER = "BANNER";
+    public static final String ADV_OBJECT_TYPE_BRAND_SHELF = "BRAND_SHELF";
+    public static final String ADV_OBJECT_TYPE_BOOSTING_SKU = "BOOSTING_SKU";
+    public static final String ADV_OBJECT_TYPE_ACTION_CAS = "ACTION_CAS";
 
     @Override
     public String toString() {
@@ -42,6 +49,7 @@ public record CampaningAnswer(
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", productCampaignMode='" + productCampaignMode + '\'' +
+                ", PaymentType='" + PaymentType + '\'' +
                 '}';
     }
 }

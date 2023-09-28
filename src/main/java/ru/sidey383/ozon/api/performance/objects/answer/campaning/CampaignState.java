@@ -1,6 +1,6 @@
 package ru.sidey383.ozon.api.performance.objects.answer.campaning;
 
-public enum CampaningState {
+public enum CampaignState {
     CAMPAIGN_STATE_UNKNOWN,
     CAMPAIGN_STATE_RUNNING,
     CAMPAIGN_STATE_PLANNED,
