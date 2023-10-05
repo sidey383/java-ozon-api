@@ -31,7 +31,7 @@ public class SalesAPITest {
 
     @BeforeAll
     public static void init() throws IOException {
-        markets = new ObjectMapper().readValue(SimpleTest.class.getResource("/markets.json"), new TypeReference<>() {
+        markets = new ObjectMapper().readValue(SalesAPITest.class.getResource("/markets.json"), new TypeReference<>() {
         });
     }
 
