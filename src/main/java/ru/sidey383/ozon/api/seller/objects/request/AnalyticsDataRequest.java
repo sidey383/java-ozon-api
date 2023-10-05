@@ -1,105 +1,135 @@
 package ru.sidey383.ozon.api.seller.objects.request;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.sidey383.ozon.api.ResultReport;
+import ru.sidey383.ozon.api.seller.JsonSellerAPIRequest;
+import ru.sidey383.ozon.api.seller.objects.answer.product.AnalyticsDataResult;
+import ru.sidey383.ozon.api.seller.objects.request.sub.*;
 
-public record AnalyticsDataRequest(
-        LocalDate date_from,
-        LocalDate date_to,
-        Dimension[] dimension,
-        Metric[] metrics,
-        AnalyticsFilter[] filters,
-        long limit,
-        long offset,
-        Sorting[] sort
-) {
+import java.time.LocalDate;
+import java.util.Arrays;
+
+/**
+ * <a href="https://docs.ozon.ru/api/seller/#tag/AnalyticsAPI">API link</a>
+ * **/
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class AnalyticsDataRequest extends JsonSellerAPIRequest<ResultReport<AnalyticsDataResult>> {
 
     public static final long MAX_LIMIT = 1000;
 
-    public record Sorting (
-            Metric key,
-            SoringOrder order
-    ){
+    private static final TypeReference<ResultReport<AnalyticsDataResult>> type = new TypeReference<>(){};
 
-        public enum SoringOrder {
-            ASC,
-            DESC
-        }
+    private static final Logger logger = LoggerFactory.getLogger(AnalyticsDataRequest.class);
 
+    @NotNull
+    private final LocalDate dateFrom;
+    @NotNull
+    private final LocalDate dateTo;
+    @NotNull
+    private final AnalyticsDimensions[] dimension;
+    private final Metric[] metrics;
+    @Nullable
+    private final AnalyticsFilter[] filters;
+    private final long limit;
+    private final long offset;
+    @Nullable
+    private final MetricsSorting[] sort;
+
+    public AnalyticsDataRequest(
+            @NotNull LocalDate dateFrom,
+            @NotNull LocalDate dateTo,
+            @NotNull AnalyticsDimensions[] dimension,
+            @NotNull Metric[] metrics,
+            @Nullable AnalyticsFilter[] filters,
+            long limit,
+            long offset,
+            @Nullable MetricsSorting[] sort) {
+        this.dateFrom = dateFrom;
+        this.dateTo = dateTo;
+        this.dimension = dimension;
+        this.metrics = metrics;
+        this.filters = filters;
+        this.limit = limit;
+        this.offset = offset;
+        this.sort = sort;
     }
 
-    public record AnalyticsFilter(
-            Metric key, //sort parameter
-            FilterOp op, // equals operator
-            String value
-    ) {
-
-        public enum FilterOp {
-            EQ, // equals
-            GT, // great
-            GTE, // great or equals
-            LT, // lower
-            LTE // lower or equals
-        }
-
+    @JsonGetter("date_from")
+    public @NotNull LocalDate getDateFrom() {
+        return dateFrom;
     }
 
-    public enum Metric {
-        revenue(false),
-        ordered_units(false),
-        unknown_metric(true),
-        hits_view_search(true),
-        hits_view_pdp(true),
-        hits_view(true),
-        hits_tocart_search(true),
-        hits_tocart_pdp(true),
-        hits_tocart(true),
-        session_view_search(true),
-        session_view_pdp(true),
-        session_view(true),
-        conv_tocart_search(true),
-        conv_tocart_pdp(true),
-        conv_tocart(true),
-        returns(true),
-        cancellations(true),
-        delivered_units(true),
-        position_category(true);
-
-        private final boolean isPremium;
-
-        Metric(boolean isPremium) {
-            this.isPremium = isPremium;
-        }
-
-        public boolean isPremium() {
-            return isPremium;
-        }
+    @JsonGetter("date_to")
+    public @NotNull LocalDate getDateTo() {
+        return dateTo;
     }
 
-    public enum Dimension {
-        unknownDimension(false),
-        sku(false),
-        spu(false),
-        day(false),
-        week(false),
-        month(false),
-        year(true),
-        category1(true),
-        category2(true),
-        category3(true),
-        category4(true),
-        brand(true),
-        modelID(true);
-
-        private final boolean isPremium;
-
-
-        Dimension(boolean isPremium) {
-            this.isPremium = isPremium;
-        }
-
-        public boolean isPremium() {
-            return isPremium;
-        }
+    @JsonGetter("dimension")
+    public @NotNull AnalyticsDimensions[] getDimension() {
+        return dimension;
     }
 
+    @JsonGetter("metrics")
+    public Metric[] getMetrics() {
+        return metrics;
+    }
+
+    @JsonGetter("filters")
+    public @Nullable AnalyticsFilter[] getFilters() {
+        return filters;
+    }
+
+    @JsonGetter("limit")
+    public long getLimit() {
+        return limit;
+    }
+
+    @JsonGetter("offset")
+    public long getOffset() {
+        return offset;
+    }
+
+    @JsonGetter("sort")
+    public @Nullable MetricsSorting[] getSort() {
+        return sort;
+    }
+
+    @Override
+    @JsonIgnore
+    protected @NotNull String getPath() {
+        return "/v1/analytics/data";
+    }
+
+    @Override
+    @JsonIgnore
+    protected @NotNull Logger getLogger() {
+        return logger;
+    }
+
+    @Override
+    @JsonIgnore
+    public @NotNull TypeReference<ResultReport<AnalyticsDataResult>> getTypeReference() {
+        return type;
+    }
+
+    @Override
+    public String toString() {
+        return "AnalyticsDataRequest{" +
+                "dateFrom=" + dateFrom +
+                ", dateTo=" + dateTo +
+                ", dimension=" + Arrays.toString(dimension) +
+                ", metrics=" + Arrays.toString(metrics) +
+                ", filters=" + Arrays.toString(filters) +
+                ", limit=" + limit +
+                ", offset=" + offset +
+                ", sort=" + Arrays.toString(sort) +
+                '}';
+    }
 }

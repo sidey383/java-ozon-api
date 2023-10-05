@@ -1,8 +1,10 @@
 package ru.sidey383.ozon.api.seller.objects.answer.product;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record PriceIndexesSelfData(
-        String minimal_price,
-        String minimal_price_currency,
-        double price_index_value
+        @JsonProperty("minimal_price") String minimalPrice,
+        @JsonProperty("minimal_price_currency") String minimalPriceCurrency,
+        @JsonProperty("price_index_value") double priceIndexValue
 ) {
 }

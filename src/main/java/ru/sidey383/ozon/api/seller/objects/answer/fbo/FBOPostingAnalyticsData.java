@@ -1,25 +1,27 @@
 package ru.sidey383.ozon.api.seller.objects.answer.fbo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * @param city Город доставки.
- * @param delivery_type Способ доставки.
- * @param is_legal Получатель юридическое лицо:
+ * @param deliveryType Способ доставки.
+ * @param isLegal Получатель юридическое лицо:
  * true — юридическое лицо,
  * false — физическое лицо.
- * @param is_premium Наличие подписки Premium.
- * @param payment_type_group_name Способ оплаты.
+ * @param isPremium Наличие подписки Premium.
+ * @param paymentTypeGroupName Способ оплаты.
  * @param region Регион доставки.
- * @param warehouse_id Идентификатор склада.
- * @param warehouse_name Название склада отправки заказа.
+ * @param warehouseID Идентификатор склада.
+ * @param warehouseName Название склада отправки заказа.
  * **/
 public record FBOPostingAnalyticsData(
-        String city,
-        String delivery_type,
-        boolean is_legal,
-        boolean is_premium,
-        String payment_type_group_name,
-        String region,
-        long warehouse_id,
-        String warehouse_name
+        @JsonProperty("city") String city,
+        @JsonProperty("delivery_type") String deliveryType,
+        @JsonProperty("is_legal") boolean isLegal,
+        @JsonProperty("is_premium") boolean isPremium,
+        @JsonProperty("payment_type_group_name") String paymentTypeGroupName,
+        @JsonProperty("region") String region,
+        @JsonProperty("warehouse_id") long warehouseID,
+        @JsonProperty("warehouse_name") String warehouseName
 ) {
 }

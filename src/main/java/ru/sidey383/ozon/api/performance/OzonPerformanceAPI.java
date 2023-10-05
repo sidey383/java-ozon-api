@@ -28,10 +28,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class OzonPerformanceAPI {
@@ -103,10 +100,10 @@ public class OzonPerformanceAPI {
                 future.complete(new StatisticResponse(null, status, data));
             } catch (InterruptedException e) {
                 this.interrupt();
-                logger.debug("Statistic request interrupted for " + clientId + ": " + answer + " " + status);
+                logger.warn("Statistic request interrupted for " + clientId + ": " + answer + " " + status);
                 future.complete(new StatisticResponse(e, status, null));
             } catch (Throwable th) {
-                logger.debug("Error statistic request for " + clientId + ": " + answer + " " + status);
+                logger.error("Can't complete statistic request for " + clientId + ": " + answer + " " + status);
                 future.complete(new StatisticResponse(th, status, null));
             } finally {
                 workingThreads.remove(this);
@@ -233,7 +230,7 @@ public class OzonPerformanceAPI {
     }
 
     public byte[] getClientStatisticsExpense(String[] campaignIDs, LocalDate from, LocalDate to) throws OzonApiException, IOException {
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(API_URL + "/api/client/statistics/expense").newBuilder();
+        HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(API_URL + "/api/client/statistics/expense")).newBuilder();
         if (campaignIDs != null)
             for (String cmp : campaignIDs) {
                 urlBuilder.addQueryParameter("campaignIds", cmp);
@@ -265,7 +262,7 @@ public class OzonPerformanceAPI {
     }
 
     public byte[] getClientStatisticsCampaignProduct(String[] campaignIDs, LocalDate from, LocalDate to) throws OzonApiException, IOException {
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(API_URL + "/api/client/statistics/campaign/product").newBuilder();
+        HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(API_URL + "/api/client/statistics/campaign/product")).newBuilder();
         if (campaignIDs != null)
             for (String cmp : campaignIDs) {
                 urlBuilder.addQueryParameter("campaignIds", cmp);

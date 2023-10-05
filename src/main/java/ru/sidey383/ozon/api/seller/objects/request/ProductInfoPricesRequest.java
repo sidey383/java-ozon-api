@@ -1,48 +1,82 @@
 package ru.sidey383.ozon.api.seller.objects.request;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.sidey383.ozon.api.PageableItemList;
+import ru.sidey383.ozon.api.SingleResultContainer;
+import ru.sidey383.ozon.api.seller.JsonSellerAPIRequest;
+import ru.sidey383.ozon.api.seller.objects.answer.product.ProductInfoPrices;
+import ru.sidey383.ozon.api.seller.objects.request.sub.ProductFilter;
 
+/**
+ * <a href="https://docs.ozon.ru/api/seller/#operation/ProductAPI_GetProductInfoPricesV4">API link</a>
+ * **/
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record ProductInfoPricesRequest (
-        Filter filter,
-        String last_id,
-        long limit
-) {
+public class ProductInfoPricesRequest extends JsonSellerAPIRequest<SingleResultContainer<PageableItemList<ProductInfoPrices>>> {
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public record Filter(
-            Visibility visibility,
-            String[] offer_id,
-            long[] product_id
-    ) {}
+    public static final long MAX_LIMIT = 1000;
 
-    public enum Visibility {
-        ALL,
-        VISIBLE,
-        INVISIBLE,
-        EMPTY_STOCK,
-        NOT_MODERATED,
-        MODERATED,
-        DISABLED,
-        STATE_FAILED,
-        READY_TO_SUPPLY,
-        VALIDATION_STATE_PENDING,
-        VALIDATION_STATE_FAIL,
-        VALIDATION_STATE_SUCCESS,
-        TO_SUPPLY,
-        IN_SALE,
-        REMOVED_FROM_SALE,
-        BANNED,
-        OVERPRICED,
-        CRITICALLY_OVERPRICED,
-        EMPTY_BARCODE,
-        BARCODE_EXISTS,
-        QUARANTINE,
-        ARCHIVED,
-        OVERPRICED_WITH_STOCK,
-        PARTIAL_APPROVED,
-        IMAGE_ABSENT,
-        MODERATION_BLOCK
+    private static final TypeReference<SingleResultContainer<PageableItemList<ProductInfoPrices>>> type = new TypeReference<>(){};
+
+    private static final Logger logger = LoggerFactory.getLogger(ProductInfoPricesRequest.class);
+
+    @NotNull
+    private final ProductFilter filter;
+    @Nullable
+    private final String lastID;
+    private final long limit;
+
+    public ProductInfoPricesRequest(@NotNull ProductFilter filter, @Nullable String lastId, long limit) {
+        this.filter = filter;
+        this.lastID = lastId;
+        this.limit = limit;
     }
 
+    @JsonGetter("filter")
+    public @NotNull ProductFilter getFilter() {
+        return filter;
+    }
+
+    @JsonGetter("last_id")
+    public @Nullable String getLastID() {
+        return lastID;
+    }
+
+    @JsonGetter("limit")
+    public long getLimit() {
+        return limit;
+    }
+
+    @Override
+    @JsonIgnore
+    protected @NotNull String getPath() {
+        return "/v4/product/info/prices";
+    }
+
+    @Override
+    @JsonIgnore
+    protected @NotNull Logger getLogger() {
+        return logger;
+    }
+
+    @Override
+    @JsonIgnore
+    public @NotNull TypeReference<SingleResultContainer<PageableItemList<ProductInfoPrices>>> getTypeReference() {
+        return type;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductInfoPricesRequest{" +
+                "filter=" + filter +
+                ", lastID='" + lastID + '\'' +
+                ", limit=" + limit +
+                '}';
+    }
 }

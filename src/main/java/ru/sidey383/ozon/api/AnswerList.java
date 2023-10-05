@@ -10,22 +10,22 @@ public class AnswerList<T> {
 
     private long total;
 
-    @JsonGetter
+    @JsonGetter("list")
     public List<T> getList() {
         return list;
     }
 
-    @JsonSetter
+    @JsonSetter("list")
     public void setList(List<T> list) {
         this.list = list;
     }
 
-    @JsonGetter
+    @JsonGetter("total")
     public long getTotal() {
         return total;
     }
 
-    @JsonSetter
+    @JsonSetter("total")
     public void setTotal(long total) {
         this.total = total;
     }

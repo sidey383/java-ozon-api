@@ -1,12 +1,13 @@
 package ru.sidey383.ozon.api.seller.objects.answer.fbo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.sidey383.ozon.api.seller.objects.answer.Currency;
 
 import java.util.List;
 
 /**
  * @param actions Действия.
- * @param currency_code Валюта ваших цен. Cовпадает с валютой, которая установлена в настройках личного кабинета.<br/>
+ * @param currencyCode Валюта ваших цен. Cовпадает с валютой, которая установлена в настройках личного кабинета.<br/>
  * Возможные значения:<br/>
  * RUB — российский рубль,<br/>
  * BYN — белорусский рубль,<br/>
@@ -14,35 +15,35 @@ import java.util.List;
  * EUR — евро,<br/>
  * USD — доллар США,<br/>
  * CNY — юань.<br/>
- * @param client_price Цена для клиента.
- * @param commission_amount Размер комиссии за товар.
- * @param commission_percent Процент комиссии.
- * @param commissions_currency_code Код валюты, в которой рассчитывались комиссии.
- * @param item_services Услуги.
- * @param old_price Цена до учёта скидок. На карточке товара отображается зачёркнутой.
+ * @param clientPrice Цена для клиента.
+ * @param commissionAmount комиссии за товар.
+ * @param commissionPercent Процент комиссии.
+ * @param commissionsCurrencyCode Код валюты, в которой рассчитывались комиссии.
+ * @param itemServices Услуги.
+ * @param oldPrice Цена до учёта скидок. На карточке товара отображается зачёркнутой.
  * @param payout Выплата продавцу.
  * @param picking Информация о доставке.
  * @param price Цена товара с учётом скидок — это значение показывается на карточке товара.
- * @param product_id Идентификатор товара.
+ * @param productID Идентификатор товара.
  * @param quantity Количество товара в отправлении.
- * @param total_discount_percent роцент скидки.
- * @param total_discount_value Сумма скидки.
+ * @param totalDiscountPercent роцент скидки.
+ * @param totalDiscountValue Сумма скидки.
  * **/
 public record FBOPostingFinancialDataProduct(
-        List<String> actions,
-        Currency currency_code,
-        String client_price,
-        double commission_amount,
-        long commission_percent,
-        String commissions_currency_code,
-        double old_price,
-        double payout,
-        double price,
-        long product_id,
-        long quantity, //Always 0 ?
-        double total_discount_percent,
-        double total_discount_value,
-        PostingFinancialDataServices item_services,
-        ProductPicking picking
+        @JsonProperty("actions") List<String> actions,
+        @JsonProperty("currency_code") Currency currencyCode,
+        @JsonProperty("client_price") String clientPrice,
+        @JsonProperty("commission_amount") double commissionAmount,
+        @JsonProperty("commission_percent") long commissionPercent,
+        @JsonProperty("commissions_currency_code") String commissionsCurrencyCode,
+        @JsonProperty("old_price") double oldPrice,
+        @JsonProperty("payout") double payout,
+        @JsonProperty("price") double price,
+        @JsonProperty("product_id") long productID,
+        @JsonProperty("quantity") long quantity, //Always 0 ?
+        @JsonProperty("total_discount_percent") double totalDiscountPercent,
+        @JsonProperty("total_discount_value") double totalDiscountValue,
+        @JsonProperty("item_services") PostingFinancialDataServices itemServices,
+        @JsonProperty("picking") ProductPicking picking
 ) {
 }
