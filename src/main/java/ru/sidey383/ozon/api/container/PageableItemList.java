@@ -1,4 +1,4 @@
-package ru.sidey383.ozon.api.seller.objects.container;
+package ru.sidey383.ozon.api.container;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;

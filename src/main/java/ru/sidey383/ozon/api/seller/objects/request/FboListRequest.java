@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.sidey383.ozon.api.seller.objects.container.ResultList;
+import ru.sidey383.ozon.api.container.ResultList;
 import ru.sidey383.ozon.api.seller.JsonSellerAPIRequest;
 import ru.sidey383.ozon.api.seller.objects.answer.fbo.FBOPosting;
 import ru.sidey383.ozon.api.seller.objects.request.sub.DeliveryTimeFilter;

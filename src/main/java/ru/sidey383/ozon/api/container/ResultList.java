@@ -1,19 +1,22 @@
-package ru.sidey383.ozon.api.seller.objects.container;
+package ru.sidey383.ozon.api.container;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-public class SingleResultContainer<A> {
+import java.util.List;
 
-    private A result;
+public class ResultList<T> {
+
+    private List<T> result;
 
     @JsonGetter("result")
-    public A getResult() {
+    public List<T> getResult() {
         return result;
     }
 
     @JsonSetter("result")
-    public void setResult(A result) {
+    public void setResult(List<T> result) {
         this.result = result;
     }
+
 }
