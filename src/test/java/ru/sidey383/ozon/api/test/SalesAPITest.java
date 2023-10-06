@@ -153,7 +153,7 @@ public class SalesAPITest {
         StockRequest request = new StockRequest(
                 100,
                 0,
-                WarehouseType.EXPRESS_DARK_STORE
+                WarehouseType.ALL
         );
         testRequest(request);
     }
