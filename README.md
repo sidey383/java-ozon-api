@@ -22,13 +22,13 @@ Dependency
 ```
 ### Gradle
 Repository 
-```xml
+```
 maven {
     name = "sidey383RepoPublic"
     url = uri("https://maven.sidey383.ru/public")
 }
 ```
 Dependency 
-```xm
+```
 implementation("ru.sidey383:java-ozon-api:1.3")
 ```
