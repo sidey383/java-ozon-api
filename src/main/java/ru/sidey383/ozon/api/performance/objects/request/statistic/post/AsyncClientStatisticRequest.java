@@ -1,4 +1,4 @@
-package ru.sidey383.ozon.api.performance.objects.request.statistic;
+package ru.sidey383.ozon.api.performance.objects.request.statistic.post;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,12 +11,13 @@ import ru.sidey383.ozon.api.performance.AsyncPerformanceAPIRequest;
 import ru.sidey383.ozon.api.performance.PerformanceAuth;
 import ru.sidey383.ozon.api.performance.exception.OzonAPINoBodyException;
 import ru.sidey383.ozon.api.performance.objects.answer.StatisticAnswer;
+import ru.sidey383.ozon.api.performance.objects.request.statistic.StatisticRequestData;
 
 import java.io.IOException;
 
-public class ClientStatisticRequest extends AsyncPerformanceAPIRequest {
+public class AsyncClientStatisticRequest extends AsyncPerformanceAPIRequest {
 
-    protected static final String url = "https://performance.ozon.ru/api/client";
+    protected static final String url = "https://performance.ozon.ru/api/client/statistics";
 
     protected static final ObjectMapper mapper;
 
@@ -30,7 +31,7 @@ public class ClientStatisticRequest extends AsyncPerformanceAPIRequest {
 
     private final String subPath;
 
-    ClientStatisticRequest(StatisticRequestData object, String subPath) {
+    AsyncClientStatisticRequest(StatisticRequestData object, String subPath) {
         this.requestObject = object;
         this.subPath = subPath;
     }

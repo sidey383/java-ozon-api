@@ -7,15 +7,12 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.sidey383.ozon.api.BaseRequest;
 import ru.sidey383.ozon.api.container.AnswerList;
 import ru.sidey383.ozon.api.exception.OzonApiException;
-import ru.sidey383.ozon.api.exception.OzonExceptionFactory;
 import ru.sidey383.ozon.api.performance.PerformanceAPIRequest;
 import ru.sidey383.ozon.api.performance.PerformanceAuth;
-import ru.sidey383.ozon.api.performance.exception.OzonAPINoBodyException;
 import ru.sidey383.ozon.api.performance.objects.answer.campaning.CampaignAnswer;
 import ru.sidey383.ozon.api.performance.objects.answer.campaning.CampaignState;
 
@@ -27,7 +24,7 @@ import java.util.List;
 /**
  * <a href="https://performance.ozon.ru:443/api/client/campaign">/api/client/campaign</a>
  */
-public class ClientCampaignRequest implements PerformanceAPIRequest<AnswerList<CampaignAnswer>> {
+public class ClientCampaignRequest extends BaseRequest implements PerformanceAPIRequest<AnswerList<CampaignAnswer>> {
 
     private static final String url = "https://performance.ozon.ru/api/client/campaign";
 
@@ -39,7 +36,7 @@ public class ClientCampaignRequest implements PerformanceAPIRequest<AnswerList<C
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
-    @NotNull
+    @Nullable
     private final List<Long> campaignID;
 
     @Nullable
@@ -48,7 +45,7 @@ public class ClientCampaignRequest implements PerformanceAPIRequest<AnswerList<C
     @Nullable
     private final CampaignState state;
 
-    public ClientCampaignRequest(@NotNull List<Long> campaignID, @Nullable String type, @Nullable CampaignState state) {
+    public ClientCampaignRequest(@Nullable List<Long> campaignID, @Nullable String type, @Nullable CampaignState state) {
         this.campaignID = campaignID;
         this.type = type;
         this.state = state;
@@ -64,7 +61,8 @@ public class ClientCampaignRequest implements PerformanceAPIRequest<AnswerList<C
         if (httpUtl == null)
             throw new IllegalStateException("Can't parse http url " + url);
         HttpUrl.Builder urlBuilder = httpUtl.newBuilder();
-        campaignID.forEach(id -> urlBuilder.addQueryParameter("campaignIds", Long.toString(id)));
+        if (campaignID != null)
+            campaignID.forEach(id -> urlBuilder.addQueryParameter("campaignIds", Long.toString(id)));
         if (type != null)
             urlBuilder.addQueryParameter("advObjectType", type);
         if (state != null)
@@ -74,13 +72,7 @@ public class ClientCampaignRequest implements PerformanceAPIRequest<AnswerList<C
                 .header(auth.getAuthorizeHeaderName(), auth.getAuthorizationHeaderValue())
                 .get()
                 .build();
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful())
-                throw OzonExceptionFactory.onWrongCode(response);
-            if (response.body() == null)
-                throw new OzonAPINoBodyException(request.url().toString(), response.code());
-            return mapper.readValue(response.body().bytes(), new TypeReference<>() {});
-        }
+        return mapper.readValue(executeRequest(client, request), new TypeReference<>() {});
     }
 
 

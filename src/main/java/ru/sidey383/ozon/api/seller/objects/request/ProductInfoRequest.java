@@ -62,11 +62,6 @@ public class ProductInfoRequest extends JsonSellerAPIRequest<SingleResultContain
     }
 
     @Override
-    protected @NotNull Logger getLogger() {
-        return logger;
-    }
-
-    @Override
     @JsonIgnore
     public @NotNull TypeReference<SingleResultContainer<ProductInfo>> getTypeReference() {
         return type;

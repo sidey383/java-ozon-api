@@ -92,11 +92,6 @@ public class FboListRequest extends JsonSellerAPIRequest<ResultList<FBOPosting>>
         return "/v2/posting/fbo/list";
     }
 
-    @Override
-    @JsonIgnore
-    protected @NotNull Logger getLogger() {
-        return logger;
-    }
 
     @Override
     @JsonIgnore

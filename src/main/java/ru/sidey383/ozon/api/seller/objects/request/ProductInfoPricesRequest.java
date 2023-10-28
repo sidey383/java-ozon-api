@@ -61,12 +61,6 @@ public class ProductInfoPricesRequest extends JsonSellerAPIRequest<SingleResultC
 
     @Override
     @JsonIgnore
-    protected @NotNull Logger getLogger() {
-        return logger;
-    }
-
-    @Override
-    @JsonIgnore
     public @NotNull TypeReference<SingleResultContainer<PageableItemList<ProductInfoPrices>>> getTypeReference() {
         return type;
     }

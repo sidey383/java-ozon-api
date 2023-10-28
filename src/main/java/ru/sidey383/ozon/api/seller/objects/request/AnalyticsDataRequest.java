@@ -109,12 +109,6 @@ public class AnalyticsDataRequest extends JsonSellerAPIRequest<ResultReport<Anal
 
     @Override
     @JsonIgnore
-    protected @NotNull Logger getLogger() {
-        return logger;
-    }
-
-    @Override
-    @JsonIgnore
     public @NotNull TypeReference<ResultReport<AnalyticsDataResult>> getTypeReference() {
         return type;
     }

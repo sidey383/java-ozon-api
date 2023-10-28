@@ -56,11 +56,6 @@ public class StockRequest extends JsonSellerAPIRequest<SingleResultContainer<Row
     }
 
     @Override
-    protected @NotNull Logger getLogger() {
-        return logger;
-    }
-
-    @Override
     @JsonIgnore
     public @NotNull TypeReference<SingleResultContainer<RowList<StockOnWarehouseItem>>> getTypeReference() {
         return type;

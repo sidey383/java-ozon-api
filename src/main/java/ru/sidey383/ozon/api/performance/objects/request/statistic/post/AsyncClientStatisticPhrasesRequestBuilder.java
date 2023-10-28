@@ -1,4 +1,6 @@
-package ru.sidey383.ozon.api.performance.objects.request.statistic;
+package ru.sidey383.ozon.api.performance.objects.request.statistic.post;
+
+import ru.sidey383.ozon.api.performance.objects.request.statistic.StatisticRequestData;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -8,41 +10,43 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * <a href="https://docs.ozon.ru/api/performance/#operation/AttributionSubmitRequest">"/api/client/statistics/attribution"</>
- **/
-public class ClientStatisticAttributionBuilder {
+public class AsyncClientStatisticPhrasesRequestBuilder {
 
     private final List<Long> campaigns = new ArrayList<>();
-    private GroupBy groupBy;
+    private final List<Long> objects = new ArrayList<>();
     private Instant from;
     private Instant to;
     LocalDate dateFrom;
     LocalDate dateTo;
 
-    public ClientStatisticAttributionBuilder() {
+    public AsyncClientStatisticPhrasesRequestBuilder() {
     }
 
-    public ClientStatisticAttributionBuilder addCampaign(Long id) {
+    public AsyncClientStatisticPhrasesRequestBuilder addCampaign(Long id) {
         if (campaigns.size() >= 10)
             throw new IllegalStateException("Too many campaigns");
         campaigns.add(id);
         return this;
     }
 
-    public ClientStatisticAttributionBuilder addCampaign(Long... ids) {
+    public AsyncClientStatisticPhrasesRequestBuilder addCampaign(Long... ids) {
         if (campaigns.size() + ids.length > 10)
             throw new IllegalStateException("Too many campaigns");
         campaigns.addAll(Arrays.asList(ids));
         return this;
     }
 
-    public ClientStatisticAttributionBuilder setGroupBy(GroupBy groupBy) {
-        this.groupBy = groupBy;
+    public AsyncClientStatisticPhrasesRequestBuilder addObject(Long id) {
+        objects.add(id);
         return this;
     }
 
-    public ClientStatisticAttributionBuilder setPeriod(LocalDate dateFrom, LocalDate dateTo) {
+    public AsyncClientStatisticPhrasesRequestBuilder addObject(Long... ids) {
+        objects.addAll(Arrays.asList(ids));
+        return this;
+    }
+
+    public AsyncClientStatisticPhrasesRequestBuilder setPeriod(LocalDate dateFrom, LocalDate dateTo) {
         if (Duration.between(dateFrom, dateTo).toDays() > 62)
             throw new IllegalArgumentException("Period is too long");
         this.dateFrom = dateFrom;
@@ -50,7 +54,7 @@ public class ClientStatisticAttributionBuilder {
         return this;
     }
 
-    public ClientStatisticAttributionBuilder setPeriod(Instant from, Instant to) {
+    public AsyncClientStatisticPhrasesRequestBuilder setPeriod(Instant from, Instant to) {
         if (Duration.between(LocalDate.ofInstant(from, ZoneOffset.UTC), LocalDate.ofInstant(from, ZoneOffset.UTC)).toDays() > 62)
             throw new IllegalArgumentException("Period is too long");
         this.from = from;
@@ -58,19 +62,21 @@ public class ClientStatisticAttributionBuilder {
         return this;
     }
 
-    public ClientStatisticRequest build() {
+    public AsyncClientStatisticRequest build() {
         if (campaigns.isEmpty())
             throw new IllegalStateException("No company has been add");
-        return new ClientStatisticRequest(
+        if (objects.isEmpty())
+            throw new IllegalStateException("No objects has been add");
+        return new AsyncClientStatisticRequest(
                 new StatisticRequestData(
                         campaigns.toArray(Long[]::new),
                         from,
                         to,
+                        objects.toArray(Long[]::new),
                         dateFrom,
-                        dateTo,
-                        groupBy
+                        dateTo
                 ),
-                "attribution"
+                "phrases"
         );
     }
 
