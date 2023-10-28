@@ -1,7 +1,7 @@
 package ru.sidey383.ozon.api.performance.objects.answer.statistic;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import ru.sidey383.ozon.api.performance.objects.request.StatisticRequest;
+import ru.sidey383.ozon.api.performance.objects.request.statistic.StatisticRequestData;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -12,7 +12,7 @@ public record StatisticStatus (
         StatisticsRequestState state,
         Instant createdAt,
         Instant updatedAt,
-        StatisticRequest request,
+        StatisticRequestData request,
         String error,
         String link,
         Kind kind

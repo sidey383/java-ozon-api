@@ -51,7 +51,7 @@ public class StockRequest extends JsonSellerAPIRequest<SingleResultContainer<Row
     }
 
     @Override
-    protected @NotNull String getPath() {
+    protected @NotNull String getURL() {
         return "/v2/analytics/stock_on_warehouses";
     }
 

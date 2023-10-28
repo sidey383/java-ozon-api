@@ -23,10 +23,7 @@ public class OzonSellerAPI {
 
     @NotNull
     public <A> A runRequest(JsonSellerAPIRequest<A> request) throws OzonWrongCodeException, IOException {
-        Request.Builder apiRequest = new Request.Builder()
-                .addHeader("Client-Id", clientID)
-                .addHeader("Api-Key", apiKey);
-        return request.makeRequest(client, apiRequest);
+        return request.makeRequest(client, clientID, apiKey);
     }
 
 }

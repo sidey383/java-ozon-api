@@ -103,7 +103,7 @@ public class AnalyticsDataRequest extends JsonSellerAPIRequest<ResultReport<Anal
 
     @Override
     @JsonIgnore
-    protected @NotNull String getPath() {
+    protected @NotNull String getURL() {
         return "/v1/analytics/data";
     }
 

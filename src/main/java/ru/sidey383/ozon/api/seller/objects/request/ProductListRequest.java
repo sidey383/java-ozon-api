@@ -53,7 +53,7 @@ public class ProductListRequest extends JsonSellerAPIRequest<SingleResultContain
 
     @Override
     @JsonIgnore
-    protected @NotNull String getPath() {
+    protected @NotNull String getURL() {
         return "/v2/product/list";
     }
 

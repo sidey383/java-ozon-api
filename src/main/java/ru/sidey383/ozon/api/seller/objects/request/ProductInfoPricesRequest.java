@@ -55,7 +55,7 @@ public class ProductInfoPricesRequest extends JsonSellerAPIRequest<SingleResultC
 
     @Override
     @JsonIgnore
-    protected @NotNull String getPath() {
+    protected @NotNull String getURL() {
         return "/v4/product/info/prices";
     }
 

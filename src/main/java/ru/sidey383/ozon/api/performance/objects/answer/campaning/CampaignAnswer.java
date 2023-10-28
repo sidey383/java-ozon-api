@@ -32,6 +32,8 @@ public record CampaignAnswer(
     public static final String ADV_OBJECT_TYPE_BOOSTING_SKU = "BOOSTING_SKU";
     public static final String ADV_OBJECT_TYPE_ACTION_CAS = "ACTION_CAS";
 
+    public static final String ADV_OBJECT_TYPE_SEARCH_PROMO = "SEARCH_PROMO";
+
     @Override
     public String toString() {
         return "CampaningAnswer{" +

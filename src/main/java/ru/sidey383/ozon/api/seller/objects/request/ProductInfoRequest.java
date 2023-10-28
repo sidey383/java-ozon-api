@@ -57,7 +57,7 @@ public class ProductInfoRequest extends JsonSellerAPIRequest<SingleResultContain
     }
 
     @Override
-    protected @NotNull String getPath() {
+    protected @NotNull String getURL() {
         return "/v2/product/info";
     }
 

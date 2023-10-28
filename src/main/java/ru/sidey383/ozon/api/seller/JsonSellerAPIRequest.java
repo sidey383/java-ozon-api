@@ -7,9 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import ru.sidey383.ozon.api.exception.OzonExceptionFactory;
-import ru.sidey383.ozon.api.exception.OzonRequestLimitException;
+import ru.sidey383.ozon.api.BaseRequest;
 import ru.sidey383.ozon.api.exception.OzonWrongCodeException;
 
 import java.io.IOException;
@@ -17,7 +15,7 @@ import java.io.IOException;
 /**
  * Объект запроса используемый в {@link OzonSellerAPI}
  **/
-public abstract class JsonSellerAPIRequest<A> {
+public abstract class JsonSellerAPIRequest<A> extends BaseRequest {
 
     private static final String API_URL = "https://api-seller.ozon.ru";
 
@@ -31,47 +29,28 @@ public abstract class JsonSellerAPIRequest<A> {
 
     @NotNull
     @JsonIgnore
-    protected abstract String getPath();
-
-    @NotNull
-    @JsonIgnore
-    protected abstract Logger getLogger();
+    protected abstract String getURL();
 
     @NotNull
     @JsonIgnore
     public abstract TypeReference<A> getTypeReference();
 
-    final A makeRequest(OkHttpClient client, Request.Builder preparedRequest) throws OzonWrongCodeException, IOException {
-        return getRequestData(client, preparedRequest, this);
+    protected A makeRequest(OkHttpClient client, String clientId, String apiKey) throws OzonWrongCodeException, IOException {
+        return getRequestData(client, clientId, apiKey, this);
     }
 
-    private A getRequestData(OkHttpClient client, Request.Builder preparedRequest, Object requestJSONBody) throws OzonWrongCodeException, IOException {
+    protected A getRequestData(OkHttpClient client, String clientId, String apiKey, Object requestJSONBody) throws OzonWrongCodeException, IOException {
         String json = mapper.writeValueAsString(requestJSONBody);
-        Request apiRequest = preparedRequest
-                .url(API_URL + getPath())
+        Request apiRequest =  new Request.Builder()
+                .addHeader("Client-Id", clientId)
+                .addHeader("Api-Key", apiKey)
+                .url(API_URL + getURL())
                 .post(RequestBody
                         .create(
                                 json,
                                 MediaType.parse("application/json")
                         )).build();
-        try (Response response = client.newCall(apiRequest).execute()) {
-            if (!response.isSuccessful()) {
-                OzonWrongCodeException e = OzonExceptionFactory.onWrongCode(response);
-                if (e instanceof OzonRequestLimitException) {
-                    getLogger().info("Request limit, response: {}", response);
-                    try {
-                        Thread.sleep(20000);
-                        return getRequestData(client, preparedRequest, requestJSONBody);
-                    } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                } else {
-                    throw e;
-                }
-            }
-            assert response.body() != null;
-            return mapper.readValue(response.body().string(), getTypeReference());
-        }
+        return mapper.readValue(executeRequest(client, apiRequest), getTypeReference());
     }
 
     public abstract String toString();
