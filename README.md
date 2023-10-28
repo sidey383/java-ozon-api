@@ -15,9 +15,9 @@ Repository
 Dependency
 ```xml
 <dependency>
-  <groupId>ru.sidey383</groupId>
-  <artifactId>java-ozon-api</artifactId>
-  <version>1.0-SNAPSHOT</version>
+    <groupId>ru.sidey383</groupId>
+    <artifactId>java-ozon-api</artifactId>
+    <version>1.3</version>
 </dependency>
 ```
 ### Gradle
@@ -30,5 +30,5 @@ maven {
 ```
 Dependency 
 ```xm
-implementation("ru.sidey383:java-ozon-api:1.0-SNAPSHOT")
+implementation("ru.sidey383:java-ozon-api:1.3")
 ```
