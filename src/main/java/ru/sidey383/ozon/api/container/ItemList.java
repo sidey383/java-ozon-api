@@ -29,4 +29,12 @@ public class ItemList<T> {
     public void setTotal(long total) {
         this.total = total;
     }
+
+    @Override
+    public String toString() {
+        return "ItemList{" +
+               "items=" + items +
+               ", total=" + total +
+               '}';
+    }
 }

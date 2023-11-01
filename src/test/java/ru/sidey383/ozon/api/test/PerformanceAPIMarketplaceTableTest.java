@@ -17,10 +17,7 @@ import ru.sidey383.ozon.api.performance.objects.request.statistic.post.AsyncClie
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class PerformanceAPIMarketplaceTableTest {
 
@@ -36,15 +33,10 @@ public class PerformanceAPIMarketplaceTableTest {
 
     @Test
     public void loadCampaigns() throws OzonApiException, IOException {
-        Set<String> types = new HashSet<>();
         for (TestMarket market : markets) {
             ClientCampaignRequest request = new ClientCampaignRequest(null, null, null);
-            AnswerList<CampaignAnswer> answerList = market.getPerformanceAPI().runRequest(request);
-            types.addAll(answerList.getList().stream().map(CampaignAnswer::advObjectType).collect(Collectors.toSet()));
-            System.out.println(market.getName());
-            answerList.getList().forEach(System.out::println);
+            market.getPerformanceAPI().runRequest(request);
         }
-        types.forEach(System.out::println);
     }
 
     @Test

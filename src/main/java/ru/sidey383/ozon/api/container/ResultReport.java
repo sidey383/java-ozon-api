@@ -33,4 +33,12 @@ public class ResultReport<A> {
     public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
     }
+
+    @Override
+    public String toString() {
+        return "ResultReport{" +
+               "result=" + result +
+               ", timestamp=" + timestamp +
+               '}';
+    }
 }

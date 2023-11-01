@@ -17,7 +17,7 @@ Dependency
 <dependency>
     <groupId>ru.sidey383</groupId>
     <artifactId>java-ozon-api</artifactId>
-    <version>1.3</version>
+    <version>1.3.1</version>
 </dependency>
 ```
 ### Gradle
@@ -30,5 +30,5 @@ maven {
 ```
 Dependency 
 ```
-implementation("ru.sidey383:java-ozon-api:1.3")
+implementation("ru.sidey383:java-ozon-api:1.3.1")
 ```

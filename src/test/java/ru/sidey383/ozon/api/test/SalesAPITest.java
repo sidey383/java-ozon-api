@@ -11,9 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.sidey383.ozon.api.container.PageableItemList;
 import ru.sidey383.ozon.api.container.SingleResultContainer;
+import ru.sidey383.ozon.api.exception.OzonWrongCodeException;
 import ru.sidey383.ozon.api.seller.JsonSellerAPIRequest;
 import ru.sidey383.ozon.api.seller.objects.answer.product.ProductInfo;
 import ru.sidey383.ozon.api.seller.objects.answer.product.ProductDescription;
+import ru.sidey383.ozon.api.seller.objects.answer.product.ProductInfoItem;
 import ru.sidey383.ozon.api.seller.objects.request.*;
 import ru.sidey383.ozon.api.seller.objects.request.sub.*;
 
@@ -54,21 +56,21 @@ public class SalesAPITest {
                         AnalyticsDimensions.SKU
                 },
                 new Metric[]{
-                        Metric.HITS_VIEW,
-                        Metric.CANCELLATIONS
+                        Metric.REVENUE,
+                        Metric.ORDERED_UNITS
                 },
                 new AnalyticsFilter[]{
                         new AnalyticsFilter(
-                                Metric.HITS_VIEW,
-                                FilterOperation.LOWER_EQUALS,
-                                "0"
+                                Metric.REVENUE,
+                                FilterOperation.GREAT_EQUALS,
+                                "10.0"
                         )
                 },
                 10,
                 0,
                 new MetricsSorting[]{
                         new MetricsSorting(
-                                Metric.HITS_VIEW,
+                                Metric.REVENUE,
                                 SortingOrder.ASCENDING
                         )
                 }
@@ -156,6 +158,77 @@ public class SalesAPITest {
                 WarehouseType.ALL
         );
         testRequest(request);
+    }
+
+    @Test
+    public void productInfoDiscountedRequestTest() throws OzonWrongCodeException, IOException {
+        ProductListRequest request = new ProductListRequest(null, null, 1);
+        boolean hasProduct = false;
+        for (var e : markets) {
+            List<ProductDescription> productDescriptions = e.getSellerAPI().runRequest(request).getResult().getItems();
+            if (productDescriptions.isEmpty())
+                continue;
+            ProductDescription productDescription = productDescriptions.get(0);
+            ProductInfoListRequest infoRequest = new ProductInfoListRequest(new String[]{productDescription.offerID()}, null, null);
+            var v1 = e.getSellerAPI().runRequest(infoRequest);
+            if (v1.getResult().getItems().isEmpty())
+                continue;
+            ProductInfoItem prod = v1.getResult().getItems().get(0);
+            long sku = Math.max(prod.sku(), Math.max(prod.fboSku(), prod.fbsSku()));
+            if (sku == 0)
+                continue;
+            ProductInfoDiscountedRequest testRequest = new ProductInfoDiscountedRequest(new Long[]{sku});
+            var data = e.getSellerAPI().runRequest(testRequest);
+            hasProduct = true;
+        }
+        assertTrue(hasProduct, "Can't found products for test");
+    }
+
+    @Test
+    public void productInfoListRequestTest() throws OzonWrongCodeException, IOException {
+        ProductListRequest request = new ProductListRequest(null, null, 1);
+        boolean hasProduct = false;
+        for (var e : markets) {
+            List<ProductDescription> productDescriptions = e.getSellerAPI().runRequest(request).getResult().getItems();
+            if (productDescriptions.isEmpty())
+                continue;
+            ProductDescription productDescription = productDescriptions.get(0);
+            ProductInfoListRequest testRequest1 = new ProductInfoListRequest(new String[]{productDescription.offerID()}, null, null);
+            assertDoesNotThrow(() -> {
+                        var v1 = e.getSellerAPI()
+                                .runRequest(testRequest1);
+                        assertFalse(
+                                v1.getResult().getItems().isEmpty(),
+                                "No result with request by offer id"
+                        );
+                    },
+                    () -> "Request: " + testRequest1
+            );
+            ProductInfoListRequest testRequest2 = new ProductInfoListRequest(null, new Long[]{productDescription.productID()}, null);
+            assertDoesNotThrow(() -> {
+                        var v2 = e.getSellerAPI()
+                                .runRequest(testRequest1);
+                        assertFalse(
+                                v2.getResult().getItems().isEmpty(),
+                                "No result with request by product id"
+                        );
+                        var prod = v2.getResult().getItems().get(0);
+                        ProductInfoListRequest testRequest3 = new ProductInfoListRequest(null, null, new Long[]{Math.max(prod.sku(), Math.max(prod.fboSku(), prod.fbsSku()))});
+                        assertDoesNotThrow(() -> {
+                                    var v3 = e.getSellerAPI().runRequest(testRequest3);
+                                    assertFalse(
+                                            v3.getResult().getItems().isEmpty(),
+                                            "No result with request by sku"
+                                    );
+                                },
+                                () -> "Request: " + testRequest3
+                        );
+                    },
+                    () -> "Request: " + testRequest2
+            );
+            hasProduct = true;
+        }
+        assertTrue(hasProduct, "Can't found products for test");
     }
 
 }
